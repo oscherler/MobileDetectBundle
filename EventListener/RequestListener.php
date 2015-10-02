@@ -96,8 +96,8 @@ class RequestListener
         }
 
         // If neither the SwitchParam nor the cookie are set, detect the view...
-        $cookieIsSet = $this->deviceView->getRequestedViewType() !== null;
-        if (!$cookieIsSet) {
+        $viewTypeWasExplicitlyRequested = $this->deviceView->getRequestedViewType() !== null;
+        if (!$viewTypeWasExplicitlyRequested) {
             $this->container->get('logger')->debug('[MobileDetectBundle] RequestListener::handleRequest detect the view');
 
             if ($this->redirectConf['detect_tablet_as_mobile'] === false && $this->mobileDetector->isTablet()) {
@@ -121,7 +121,7 @@ class RequestListener
 
         // We don't need to modify _every_ response: once the cookie is set,
         // save badwith and CPU cycles by just letting it expire someday.
-        if ($cookieIsSet) {
+        if ($viewTypeWasExplicitlyRequested) {
             return;
         }
 
