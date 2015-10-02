@@ -48,21 +48,34 @@ class DeviceView
     protected $viewType;
 
     /**
+     * @var \Symfony\Component\HttpKernel\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Constructor
      *
      * @param \Symfony\Component\DependencyInjection\Container $serviceContainer
      */
     public function __construct(Container $serviceContainer)
     {
-        $serviceContainer->get('logger')->debug('[MobileDetectBundle] DeviceView::__construct', array('scope_request' => $serviceContainer->isScopeActive('request')));
+        $this->logger = $serviceContainer->get('logger');
+    }
 
-        if (false === $serviceContainer->isScopeActive('request')) {
+    /**
+     * Set the request and check for switch parameter and cookie.
+     * @param Request $request
+     */
+    public function setRequest($request) {
+        $this->request = $request;
+
+        $this->logger->debug('[MobileDetectBundle] DeviceView::setRequest', array('request' => $request));
+
+        if (null === $this->request) {
             $this->viewType = self::VIEW_NOT_MOBILE;
 
             return;
         }
-
-        $this->request = $serviceContainer->get('request');
 
         if ($this->request->query->has(self::SWITCH_PARAM)) {
             $this->viewType = $this->request->query->get(self::SWITCH_PARAM);
@@ -70,7 +83,7 @@ class DeviceView
             $this->viewType = $this->request->cookies->get(self::COOKIE_KEY);
         }
 
-        $serviceContainer->get('logger')->debug('[MobileDetectBundle] DeviceView setting requestedViewType', array('viewType' => $this->viewType));
+        $this->logger->debug('[MobileDetectBundle] DeviceView setting requestedViewType', array('viewType' => $this->viewType));
 
         $this->requestedViewType = $this->viewType;
     }

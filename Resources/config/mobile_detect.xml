@@ -14,6 +14,9 @@
 
         <service id="mobile_detect.device_view" class="%mobile_detect.device_view.class%">
             <argument type="service" id="service_container" />
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false" />
+            </call>
         </service>
     </services>
 </container>
