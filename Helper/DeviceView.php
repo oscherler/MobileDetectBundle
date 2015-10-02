@@ -54,6 +54,8 @@ class DeviceView
      */
     public function __construct(Container $serviceContainer)
     {
+        $serviceContainer->get('logger')->debug('[MobileDetectBundle] DeviceView::__construct', array('scope_request' => $serviceContainer->isScopeActive('request')));
+
         if (false === $serviceContainer->isScopeActive('request')) {
             $this->viewType = self::VIEW_NOT_MOBILE;
 
@@ -67,6 +69,9 @@ class DeviceView
         } elseif ($this->request->cookies->has(self::COOKIE_KEY)) {
             $this->viewType = $this->request->cookies->get(self::COOKIE_KEY);
         }
+
+        $serviceContainer->get('logger')->debug('[MobileDetectBundle] DeviceView setting requestedViewType', array('viewType' => $this->viewType));
+
         $this->requestedViewType = $this->viewType;
     }
 
