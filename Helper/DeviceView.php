@@ -78,14 +78,10 @@ class DeviceView
         }
 
         if ($this->request->query->has(self::SWITCH_PARAM)) {
-            $this->viewType = $this->request->query->get(self::SWITCH_PARAM);
+            $this->saveRequestedViewType($this->request->query->get(self::SWITCH_PARAM));
         } elseif ($this->request->cookies->has(self::COOKIE_KEY)) {
-            $this->viewType = $this->request->cookies->get(self::COOKIE_KEY);
+            $this->saveRequestedViewType($this->request->cookies->get(self::COOKIE_KEY));
         }
-
-        $this->logger->debug('[MobileDetectBundle] DeviceView setting requestedViewType', array('viewType' => $this->viewType));
-
-        $this->requestedViewType = $this->viewType;
     }
 
     /**
@@ -106,6 +102,19 @@ class DeviceView
     public function getRequestedViewType()
     {
         return $this->requestedViewType;
+    }
+
+    /**
+     * Saves the view type that has explicitly been requested either by switch param, or by cookie.
+     *
+     * @param string $view
+     */
+    protected function saveRequestedViewType($viewType)
+    {
+        $this->logger->debug('[MobileDetectBundle] DeviceView setting requestedViewType', array('viewType' => $this->viewType));
+
+        $this->viewType = $viewType;
+        $this->requestedViewType = $this->viewType;
     }
 
     /**
