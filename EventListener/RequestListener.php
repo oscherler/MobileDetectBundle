@@ -85,8 +85,6 @@ class RequestListener
             return;
         }
 
-        $this->container->get('logger')->debug('[MobileDetectBundle] RequestListener::handleRequest MASTER_REQUEST', array('deviceView->hasSwitchParam()' => $this->deviceView->hasSwitchParam()));
-
         $this->mobileDetector->setUserAgent($event->getRequest()->headers->get('user-agent'));
 
         // Sets the flag for the response handled by the GET switch param and the type of the view.
@@ -98,8 +96,6 @@ class RequestListener
         // If neither the SwitchParam nor the cookie are set, detect the view...
         $viewTypeWasExplicitlyRequested = $this->deviceView->getRequestedViewType() !== null;
         if (!$viewTypeWasExplicitlyRequested) {
-            $this->container->get('logger')->debug('[MobileDetectBundle] RequestListener::handleRequest detect the view');
-
             if ($this->redirectConf['detect_tablet_as_mobile'] === false && $this->mobileDetector->isTablet()) {
                 $this->deviceView->setTabletView();
             } elseif ($this->mobileDetector->isMobile()) {

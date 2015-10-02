@@ -48,18 +48,10 @@ class DeviceView
     protected $viewType;
 
     /**
-     * @var \Symfony\Component\HttpKernel\Log\LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * Constructor
-     *
-     * @param \Symfony\Component\DependencyInjection\Container $serviceContainer
      */
-    public function __construct(Container $serviceContainer)
+    public function __construct()
     {
-        $this->logger = $serviceContainer->get('logger');
     }
 
     /**
@@ -68,8 +60,6 @@ class DeviceView
      */
     public function setRequest($request) {
         $this->request = $request;
-
-        $this->logger->debug('[MobileDetectBundle] DeviceView::setRequest', array('request' => $request));
 
         if (null === $this->request) {
             $this->viewType = self::VIEW_NOT_MOBILE;
@@ -111,8 +101,6 @@ class DeviceView
      */
     protected function saveRequestedViewType($viewType)
     {
-        $this->logger->debug('[MobileDetectBundle] DeviceView setting requestedViewType', array('viewType' => $this->viewType));
-
         $this->viewType = $viewType;
         $this->requestedViewType = $this->viewType;
     }
