@@ -24,6 +24,7 @@ use Twig_Extension;
 class MobileDetectExtension extends Twig_Extension
 {
     private $mobileDetector;
+    private $deviceView;
     private $redirectConf;
 
     /**
