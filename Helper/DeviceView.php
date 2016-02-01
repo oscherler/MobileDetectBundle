@@ -275,6 +275,30 @@ class DeviceView
     }
 
     /**
+     * Gets the RedirectResponse by switch param value.
+     *
+     * @param string $redirectUrl
+     *
+     * @return \SunCat\MobileDetectBundle\Helper\RedirectResponseWithCookie
+     */
+    public function stringToViewName($name)
+    {
+        switch ($name) {
+            case 'full':
+                return self::VIEW_FULL;
+                break;
+            case 'mobile':
+                return self::VIEW_MOBILE;
+                break;
+            case 'tablet':
+                return self::VIEW_TABLET;
+                break;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Gets the cookie.
      *
      * @param string $cookieValue

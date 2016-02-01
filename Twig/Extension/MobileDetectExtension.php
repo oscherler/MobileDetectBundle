@@ -63,6 +63,7 @@ class MobileDetectExtension extends Twig_Extension
             new \Twig_SimpleFunction('is_ios', array($this, 'isIOS')),
             new \Twig_SimpleFunction('is_android_os', array($this, 'isAndroidOS')),
             new \Twig_SimpleFunction('full_view_url', array($this, 'fullViewUrl'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('url_for_switch_view', array($this, 'urlForSwitchView'), array('is_safe' => array('html'))),
         );
     }
 
@@ -100,6 +101,29 @@ class MobileDetectExtension extends Twig_Extension
         }
 
         return $result;
+    }
+
+    /**
+     * Regardless of the current view, returns the URL that leads to the equivalent page
+     * in the requested view.
+     * @return string
+     */
+    public function urlForSwitchView($viewName)
+    {
+        if(! $view = $this->deviceView->stringToViewName($viewName)) {
+            return null;
+        }
+
+        $requestSwitchView = $this->request->duplicate();
+        $requestSwitchView->query->set(DeviceView::SWITCH_PARAM, $view);
+        $requestSwitchView->server->set(
+            'QUERY_STRING',
+            Request::normalizeQueryString(
+                http_build_query($requestSwitchView->query->all(), null, '&')
+            )
+        );
+
+        return $requestSwitchView->getUri();
     }
 
     /**
