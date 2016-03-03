@@ -63,6 +63,7 @@ class MobileDetectExtension extends Twig_Extension
             new \Twig_SimpleFunction('is_ios', array($this, 'isIOS')),
             new \Twig_SimpleFunction('is_android_os', array($this, 'isAndroidOS')),
             new \Twig_SimpleFunction('full_view_url', array($this, 'fullViewUrl'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('alternate_view_url', array($this, 'alternateViewUrl'), array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('url_for_switch_view', array($this, 'urlForSwitchView'), array('is_safe' => array('html'))),
         );
     }
@@ -94,6 +95,46 @@ class MobileDetectExtension extends Twig_Extension
 
         // if fullHost ends with /, skip it since getPathInfo() also starts with /
         $result = rtrim($fullHost, '/') . $this->request->getPathInfo();
+
+        $query = Request::normalizeQueryString(http_build_query($this->request->query->all()));
+        if ($query) {
+            $result .= '?' . $query;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Regardless of the current view, returns the URL that leads to the equivalent page
+     * in the requested view. This is useful for generating <link rel="alternate"> tags
+     * on mobile pages for Search Engine Optimization.
+     * See: http://searchengineland.com/the-definitive-guide-to-mobile-technical-seo-166066
+     * @return string
+     */
+    public function alternateViewUrl( $viewName )
+    {
+        if(! $view = $this->deviceView->stringToViewName($viewName)) {
+            return null;
+        }
+
+        if (!isset($this->redirectConf[$view]['host'])) {
+            // The host property has not been configured for the requested view
+            return null;
+        }
+
+        $requestedHost = $this->redirectConf[$view]['host'];
+
+        if (empty($requestedHost)) {
+            return null;
+        }
+
+        // If not in request scope, we can only return the base URL to the requested view
+        if (!$this->request) {
+            return $requestedHost;
+        }
+
+        // if requestedHost ends with /, skip it since getPathInfo() also starts with /
+        $result = rtrim($requestedHost, '/') . $this->request->getPathInfo();
 
         $query = Request::normalizeQueryString(http_build_query($this->request->query->all()));
         if ($query) {
